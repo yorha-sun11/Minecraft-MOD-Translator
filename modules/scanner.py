@@ -31,9 +31,11 @@ def scan_mods(folder_path):
         except Exception:
             pass
 
+        # ▽ ここから下の辞書（dict）の中身を画像の通りに変更しました
         mods.append({
-            "name": jar.name,
-            "path": jar,
+            "name": jar.stem,
+            "jar_name": jar.name,
+            "jar_path": jar,
             "has_lang": has_lang,
             "lang_path": lang_path
         })

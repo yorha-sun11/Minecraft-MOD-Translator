@@ -1,8 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from pathlib import Path
-from modules.scanner import scan_mods
-
+from modules.scanner import scan_mods  # ① 一番上にこれを追加しました
 
 def select_mods_folder():
     folder = filedialog.askdirectory(title="modsフォルダを選択してください")
@@ -12,20 +11,20 @@ def select_mods_folder():
 
     folder = Path(folder)
 
-    jars = list(folder.glob("*.jar"))
-
-    if not jars:
-        messagebox.showwarning("エラー", "このフォルダには.jarファイルがありません。")
-        return
+    # ② ここから下の処理を、画像の指示通りに新しく置き換えました
+    mods = scan_mods(folder)
 
     output.delete("1.0", tk.END)
 
-    output.insert(tk.END, f"MOD数: {len(jars)}\n\n")
+    output.insert(tk.END, f"MOD数: {len(mods)}\n\n")
 
-    for jar in sorted(jars):
-        output.insert(tk.END, jar.name + "\n")
+    for mod in mods:
+        if mod["has_lang"]:
+            output.insert(tk.END, f"✅ {mod['name']}\n    {mod['lang_path']}\n\n")
+        else:
+            output.insert(tk.END, f"❌ {mod['name']}\n    翻訳ファイルなし\n\n")
 
-
+# --- ここから下は変更なし（元のGUI設定のまま）です ---
 root = tk.Tk()
 root.title("Minecraft MOD Translator")
 root.geometry("700x500")
