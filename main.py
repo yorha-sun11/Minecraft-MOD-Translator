@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from pathlib import Path
-from modules.scanner import scan_mods  # ① 一番上にこれを追加しました
+from modules.scanner import scan_mods
 
 def select_mods_folder():
     folder = filedialog.askdirectory(title="modsフォルダを選択してください")
@@ -11,7 +11,6 @@ def select_mods_folder():
 
     folder = Path(folder)
 
-    # ② ここから下の処理を、画像の指示通りに新しく置き換えました
     mods = scan_mods(folder)
 
     output.delete("1.0", tk.END)
@@ -19,10 +18,20 @@ def select_mods_folder():
     output.insert(tk.END, f"MOD数: {len(mods)}\n\n")
 
     for mod in mods:
-        if mod["has_lang"]:
-            output.insert(tk.END, f"✅ {mod['name']}\n    {mod['lang_path']}\n\n")
+        # ▽ 画像の指示通り、表示を詳しく豪華に修正しました
+        if mod.has_lang:
+            output.insert(
+                tk.END,
+                f"✅ {mod.name}\n"
+                f"    英語ファイル : {mod.lang_path}\n"
+                f"    言語数 : {mod.language_count}\n\n"
+            )
         else:
-            output.insert(tk.END, f"❌ {mod['name']}\n    翻訳ファイルなし\n\n")
+            output.insert(
+                tk.END,
+                f"❌ {mod.name}\n"
+                f"    言語ファイルなし\n\n"
+            )
 
 # --- ここから下は変更なし（元のGUI設定のまま）です ---
 root = tk.Tk()
