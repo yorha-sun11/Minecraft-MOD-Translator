@@ -2,8 +2,15 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from pathlib import Path
 from modules.scanner import scan_mods
+from modules.extractor import extract_language_files  # ① 一番上に追加
+
+# ② スキャンしたMOD一覧を記憶しておくグローバル変数
+current_mods = []
+
 
 def select_mods_folder():
+    global current_mods  # 関数内でグローバル変数を上書きするための宣言
+
     folder = filedialog.askdirectory(title="modsフォルダを選択してください")
 
     if not folder:
@@ -11,14 +18,14 @@ def select_mods_folder():
 
     folder = Path(folder)
 
-    mods = scan_mods(folder)
+    # ③ 変数名を current_mods に変更
+    current_mods = scan_mods(folder)
 
     output.delete("1.0", tk.END)
 
-    output.insert(tk.END, f"MOD数: {len(mods)}\n\n")
+    output.insert(tk.END, f"MOD数: {len(current_mods)}\n\n")
 
-    for mod in mods:
-        # ▽ 画像の指示通り、表示を詳しく豪華に修正しました
+    for mod in current_mods:
         if mod.has_lang:
             output.insert(
                 tk.END,
@@ -33,18 +40,33 @@ def select_mods_folder():
                 f"    言語ファイルなし\n\n"
             )
 
-# --- ここから下は変更なし（元のGUI設定のまま）です ---
+
+# ④ 抽出ボタンを押したときの処理を新しく追加
+def extract():
+    if not current_mods:
+        messagebox.showwarning("警告", "先にスキャンしてください")
+        return
+
+    success, failed = extract_language_files(current_mods)
+
+    messagebox.showinfo(
+        "完了", f"{success}個抽出しました\n" f"失敗:{failed}"
+    )
+
+
+# --- ここから下はGUI設定 ---
 root = tk.Tk()
 root.title("Minecraft MOD Translator")
 root.geometry("700x500")
 
+# スキャンボタン
 button = tk.Button(
-    root,
-    text="modsフォルダを選択",
-    command=select_mods_folder,
-    height=2
+    root, text="modsフォルダを選択", command=select_mods_folder, height=2
 )
 button.pack(pady=10)
+
+# ⑤ 抽出ボタンを新しく画面に追加
+tk.Button(root, text="en_us.jsonを抽出", command=extract).pack(pady=5)
 
 output = tk.Text(root)
 output.pack(fill="both", expand=True, padx=10, pady=10)

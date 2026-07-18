@@ -1,27 +1,61 @@
 from pathlib import Path
+import shutil
 import zipfile
 
+from modules.models import ModInfo
 
-def extract_lang(mod, export_root):
+
+def extract_language_files(
+    mods: list[ModInfo],
+    export_dir: str | Path = "export"
+) -> tuple[int, int]:
     """
-    mod辞書から en_us.json を抽出する
+    en_us.jsonをexportフォルダへ抽出する
+
+    Returns
+    -------
+    (成功数, 失敗数)
     """
 
-    if not mod["has_lang"]:
-        return False
+    export_path = Path(export_dir)
 
-    export_root = Path(export_root)
+    if export_path.exists():
+        shutil.rmtree(export_path)
 
-    destination = export_root / mod["name"]
-    destination.mkdir(parents=True, exist_ok=True)
+    export_path.mkdir()
 
-    with zipfile.ZipFile(mod["jar_path"], "r") as zip_file:
+    success = 0
+    failed = 0
 
-        with zip_file.open(mod["lang_path"]) as src:
+    for mod in mods:
 
-            data = src.read()
+        if not mod.has_lang:
+            continue
 
-            with open(destination / "en_us.json", "wb") as dst:
-                dst.write(data)
+        try:
 
-    return True
+            with zipfile.ZipFile(mod.jar_path, "r") as jar:
+
+                destination = (
+                    export_path
+                    / mod.name
+                    / "en_us.json"
+                )
+
+                destination.parent.mkdir(
+                    parents=True,
+                    exist_ok=True
+                )
+
+                with jar.open(mod.lang_path) as source:
+
+                    destination.write_bytes(source.read())
+
+            success += 1
+
+        except Exception as e:
+
+            print(e)
+            failed += 1
+
+    return success, failed
