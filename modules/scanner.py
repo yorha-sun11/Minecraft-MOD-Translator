@@ -1,3 +1,4 @@
+from modules.models import ModInfo
 from pathlib import Path
 import zipfile
 
@@ -31,13 +32,15 @@ def scan_mods(folder_path):
         except Exception:
             pass
 
-        # ▽ ここから下の辞書（dict）の中身を画像の通りに変更しました
-        mods.append({
-            "name": jar.stem,
-            "jar_name": jar.name,
-            "jar_path": jar,
-            "has_lang": has_lang,
-            "lang_path": lang_path
-        })
+        # ▽ 辞書型（{}）から ModInfo クラスを使う形に変更しました
+        mods.append(
+            ModInfo(
+                name=jar.stem,
+                jar_name=jar.name,
+                jar_path=jar,
+                has_lang=has_lang,
+                lang_path=lang_path
+            )
+        )
 
     return mods
