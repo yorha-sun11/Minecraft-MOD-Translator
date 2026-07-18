@@ -1,18 +1,16 @@
-# Minecraft MOD Translator
+Minecraft Mod Translator
 
-Minecraft MOD の日本語化を支援する Windows 向けツールです。
+Minecraft MODの言語ファイルを抽出し、
+日本語リソースパックを生成するツールです。
 
-## 目標
+対応
 
-- MOD を自動解析
-- en_us.json を抽出
-- 翻訳を管理
-- リソースパックを生成
+- Minecraft 1.21.1
+- NeoForge
+- Windows
 
-## 開発状況
+機能
 
-- [x] GUI作成
-- [x] MOD一覧取得
-- [ ] 言語ファイル検出
-- [ ] JSON抽出
-- [ ] リソースパック生成
+- MODスキャン
+- en_us.json抽出
+- Resource Pack生成
